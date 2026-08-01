@@ -1,0 +1,50 @@
+.pokemon-details {
+    text-align:center;
+    padding:40px;
+}
+
+.pokemon-details img {
+    width:300px;
+}
+
+.types span {
+    display:inline-block;
+    padding:8px 15px;
+    margin:5px;
+    border-radius:20px;
+    background:#eee;
+}
+
+.stats {
+    margin-top:30px;
+}
+
+.back-button {
+
+    display:inline-block;
+
+    margin-bottom:30px;
+
+    padding:10px 20px;
+
+    border-radius:10px;
+
+    background:#ef5350;
+
+    color:white;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+    transition:0.2s;
+
+}
+
+.back-button:hover {
+
+    transform:translateY(-2px);
+
+    opacity:0.9;
+
+}

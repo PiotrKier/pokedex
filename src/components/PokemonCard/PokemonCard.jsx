@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 
+import fallbackImage from "../../assets/images/Question_mark_pokeball.png";
 import { getTypeColor } from "../../utils/getTypeColor";
 
 import "./PokemonCard.css";
 
+import TypeBadge from "../TypeBadge/TypeBadge";
 
 function PokemonCard({ pokemon }) {
 
@@ -19,32 +21,48 @@ function PokemonCard({ pokemon }) {
       to={`/pokemon/${pokemon.name}`}
       className="pokemon-link"
     >
-
         <div
-            className={`pokemon-card ${hasTwoTypes ? "two-types" : "one-type"}`}
-            style={{
-                "--type1": getTypeColor(pokemon.types[0].type.name),
-                "--type2": getTypeColor(pokemon.types[1]?.type.name || pokemon.types[0].type.name)
-            }}
+          className={`pokemon-card ${hasTwoTypes ? "two-types" : "one-type"}`}
+          style={{
+            "--type1": getTypeColor(type1),
+            "--type2": getTypeColor(type2)
+          }}
         >
+            <img
+              src={pokemon.sprites.front_default || fallbackImage}
+              alt={pokemon.name}
+              onError={(event) => {
+                event.currentTarget.src = fallbackImage;
+                event.currentTarget.onerror = null;
+              }}
+            />
 
-        <img
-          src={pokemon.sprites.front_default}
-          alt={pokemon.name}
-        />
+            <div className="pokemon-info">
 
+                <h2>
+                  {pokemon.name}
+                </h2>
 
-        <h2>
-          {pokemon.name}
-        </h2>
+                <p>
+                  #{pokemon.id}
+                </p>
 
+                <div className="card-types">
 
-        <p>
-          #{pokemon.id}
-        </p>
+                  {pokemon.types.map((type)=>(
 
+                    <TypeBadge
+                      key={type.type.name}
+                      type={type.type.name}
+                    />
 
-      </div>
+                  ))}
+
+                </div>
+
+            </div>
+
+        </div>
 
     </Link>
 

@@ -12,10 +12,14 @@
 
     background:#ef5350;
 
+    font-family: 'Alatsi', sans-serif;
 }
 
 .logo {
 
+    display:flex;
+    align-items:center;
+    gap:12px;
     color:white;
 
     font-size:28px;
@@ -24,6 +28,13 @@
 
     text-decoration:none;
 
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    display: block;
 }
 
 .search-form {

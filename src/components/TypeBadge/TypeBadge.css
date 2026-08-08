@@ -1,11 +1,15 @@
 .type-badge {
-    display: inline-block;
-    padding: 8px 15px;
-    margin: 5px;
-    border-radius: 20px;
-    color: white;
-    font-weight: bold;
-    text-transform: capitalize;
+
+    padding:5px 10px;
+
+    font-size:12px;
+    font-family: 'Alatsi', sans-serif;
+
+    border-radius:15px;
+
+    color:white;
+
+    text-transform: uppercase;
 }
 
 

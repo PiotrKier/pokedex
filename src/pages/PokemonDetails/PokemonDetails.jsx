@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 
+import fallbackImage from "../../assets/images/Question_mark_pokeball.png";
 import { getPokemon } from "../../services/pokeApi";
 import TypeBadge from "../../components/TypeBadge/TypeBadge";
 
@@ -79,8 +80,12 @@ function PokemonDetails() {
 
 
       <img
-        src={pokemon.sprites.other["official-artwork"].front_default}
+        src={pokemon.sprites.other["official-artwork"].front_default || fallbackImage}
         alt={pokemon.name}
+        onError={(event) => {
+          event.currentTarget.src = fallbackImage;
+          event.currentTarget.onerror = null;
+        }}
       />
 
 

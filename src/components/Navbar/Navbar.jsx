@@ -1,27 +1,61 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 
 import "./Navbar.css";
 
+const POKEMON_TYPES = [
+  "normal",
+  "fire",
+  "water",
+  "electric",
+  "grass",
+  "ice",
+  "fighting",
+  "poison",
+  "ground",
+  "flying",
+  "psychic",
+  "bug",
+  "rock",
+  "ghost",
+  "dragon",
+  "dark",
+  "steel",
+  "fairy",
+];
 
 function Navbar() {
 
   const [search, setSearch] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setSearch(params.get("search") || "");
+  }, [location.search]);
 
-  function handleSearch(e) {
+  function handleClear(e) {
 
     e.preventDefault();
-
-    if (!search.trim()) return;
-
-
-    navigate(`/pokemon/${search.toLowerCase()}`);
-
     setSearch("");
+    navigate("/");
 
+  }
+
+  function handleChange(e) {
+    const value = e.target.value;
+    setSearch(value);
+
+    const query = value.trim().toLowerCase();
+
+    if (!query) {
+      navigate("/");
+      return;
+    }
+
+    navigate(`/?search=${encodeURIComponent(query)}`);
   }
 
 
@@ -33,12 +67,17 @@ function Navbar() {
         to="/"
         className="logo"
       >
-        Pokédex
+        <img
+          src="/src/assets/icons/Pokeball.png"
+          alt="Pokéball"
+          className="logo-icon"
+        />
+        <span>Pokédex</span>
       </Link>
 
 
       <form 
-        onSubmit={handleSearch}
+        onSubmit={handleClear}
         className="search-form"
       >
 
@@ -46,17 +85,17 @@ function Navbar() {
 
           type="text"
 
-          placeholder="Search Pokémon..."
+          placeholder="Search Pokémon or type..."
 
           value={search}
 
-          onChange={(e)=>setSearch(e.target.value)}
+          onChange={handleChange}
 
         />
 
 
-        <button>
-          Search
+        <button type="submit">
+          Clear
         </button>
 
 

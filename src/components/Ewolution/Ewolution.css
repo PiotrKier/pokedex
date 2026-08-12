@@ -1,0 +1,75 @@
+.ewolution-root {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.evo-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.evo-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  background: linear-gradient(180deg,#ef4444,#b91c1c);
+  color: #fff5f5;
+}
+
+.evo-item.current {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  background: linear-gradient(180deg,#dd6e6e,#e74646);
+  color: #3b0303;
+}
+
+.evo-main {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.evo-item img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  background: transparent;
+}
+
+.evo-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.evo-name {
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.evo-reqs {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.evo-req {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  color: #ffecec;
+}
+
+.evo-arrow {
+  font-size: 20px;
+  color: #d1d5db;
+  text-align: center;
+}
+
+.evo-link {
+  text-decoration: none;
+  color: inherit;
+}

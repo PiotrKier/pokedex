@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { getTypeColor } from "../../utils/getTypeColor";
 import { useParams, Link } from "react-router-dom";
 
 import fallbackImage from "../../assets/images/Question_mark_pokeball.png";
-import { getPokemon } from "../../services/pokeApi";
+import { getPokemon, getPokemonSpecies } from "../../services/pokeApi";
+import Ewolution from "../../components/Ewolution/Ewolution";
 import TypeBadge from "../../components/TypeBadge/TypeBadge";
 
 import "./PokemonDetails.css";
@@ -14,6 +16,11 @@ function PokemonDetails() {
   const [pokemon, setPokemon] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [species, setSpecies] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioAvailable, setAudioAvailable] = useState(false);
+  const audioRef = useRef(null);
+  const [volume, setVolume] = useState(1);
 
 
   useEffect(() => {
@@ -25,11 +32,24 @@ function PokemonDetails() {
         setLoading(true);
         setError(false);
         setPokemon(null);
+        setSpecies(null);
 
 
         const data = await getPokemon(name);
-
         setPokemon(data);
+
+        // pobierz dane species, aby uzyskać flavor_text_entries i evolution_chain
+        try {
+          const sp = await getPokemonSpecies(name);
+          setSpecies(sp);
+          // wykryj, czy species zawiera cries
+          if (sp.cries && (sp.cries.latest || sp.cries.legacy)) {
+            setAudioAvailable(!!sp.cries.latest || !!sp.cries.legacy);
+          }
+        } catch (e) {
+          // błąd niekrytyczny: pozostaw species jako null
+          console.warn(e);
+        }
 
 
       } catch (err) {
@@ -63,72 +83,131 @@ function PokemonDetails() {
 
 
   return (
+    <main className="pokemon-details">
 
-  <main className="pokemon-details">
+      <Link to="/" className="back-button">Powrót do listy</Link>
 
-    <Link 
-      to="/"
-      className="back-button"
-    >
-      Powrót do listy
-    </Link>
+      <h1>{pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}</h1>
 
+      <div className="details-grid">
 
-    <h1>
-      {pokemon.name}
-    </h1>
+        <section className="left">
+          <img
+            src={pokemon.sprites.other["official-artwork"].front_default || fallbackImage}
+            alt={pokemon.name}
+            onError={(event) => {
+              event.currentTarget.src = fallbackImage;
+              event.currentTarget.onerror = null;
+            }}
+          />
 
+          <h3>#{pokemon.id}</h3>
 
-      <img
-        src={pokemon.sprites.other["official-artwork"].front_default || fallbackImage}
-        alt={pokemon.name}
-        onError={(event) => {
-          event.currentTarget.src = fallbackImage;
-          event.currentTarget.onerror = null;
-        }}
-      />
+          <div className="types">
+            {pokemon.types.map((type) => (
+              <TypeBadge key={type.type.name} type={type.type.name} />
+            ))}
+          </div>
+            <div className="sound-controls">
+              <button
+                className="sound-button"
+                onClick={async () => {
+                  // określ źródło audio: preferuj pokemon.cries.latest -> species.cries.latest -> URL zapasowy
+                  const src =
+                    pokemon?.cries?.latest || species?.cries?.latest || species?.cries?.legacy ||
+                    `https://play.pokemonshowdown.com/audio/cries/${pokemon.name}.mp3`;
 
+                  if (!src) return;
 
-      <h3>
-        #{pokemon.id}
-      </h3>
+                  try {
+                    if (!audioRef.current) {
+                      audioRef.current = new Audio(src);
+                      audioRef.current.volume = volume;
+                      audioRef.current.addEventListener("ended", () => setIsPlaying(false));
+                      audioRef.current.addEventListener("error", () => {
+                        setIsPlaying(false);
+                        console.warn("Błąd odtwarzania dźwięku", src);
+                      });
+                    }
 
+                    if (isPlaying) {
+                      audioRef.current.pause();
+                      audioRef.current.currentTime = 0;
+                      setIsPlaying(false);
+                    } else {
+                      // jeśli src się zmieniło, zaktualizuj audio
+                      if (audioRef.current.src !== src) {
+                        audioRef.current.src = src;
+                      }
+                      audioRef.current.volume = volume;
+                      await audioRef.current.play();
+                      setIsPlaying(true);
+                    }
+                  } catch (err) {
+                    console.warn(err);
+                    setIsPlaying(false);
+                  }
+                }}
+                disabled={!pokemon}
+                title="Odtwórz dźwięk"
+              >
+                {isPlaying ? "Stop" : "Dźwięk"}
+              </button>
 
-      <div className="types">
+              <input
+                className="volume-slider"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  setVolume(v);
+                  if (audioRef.current) audioRef.current.volume = v;
+                }}
+                aria-label="Głośność"
+              />
+            </div>
 
-  {pokemon.types.map((type)=>(
+          <div className="stats">
+            <h2>Podstawowe statystyki</h2>
+            {pokemon.stats.map((stat) => (
+              <p key={stat.stat.name}>
+                {stat.stat.name}: {stat.base_stat}
+              </p>
+            ))}
+          </div>
+        </section>
 
-    <TypeBadge
-      key={type.type.name}
-      type={type.type.name}
-    />
+        <aside className="right">
+          <div className="flavor">
+            <h2>Opis</h2>
+            {species ? (
+              (() => {
+                const entry = species.flavor_text_entries.find(
+                  (e) => e.language.name === "en" || e.language.name === "pl"
+                );
+                return <p>{entry ? entry.flavor_text.replace(/\f/g, " ") : "Brak opisu."}</p>;
+              })()
+            ) : (
+              <p>Brak opisu.</p>
+            )}
+          </div>
 
-  ))}
-
-</div>
-
-
-      <div className="stats">
-
-        <h2>
-          Stats
-        </h2>
-
-
-        {pokemon.stats.map((stat)=>(
-
-          <p key={stat.stat.name}>
-            {stat.stat.name}: {stat.base_stat}
-          </p>
-
-        ))}
-
+          <div className="evolution">
+            <h2>Drzewko ewolucji</h2>
+            {species && species.evolution_chain ? (
+              <Ewolution chainUrl={species.evolution_chain.url} current={pokemon.name} />
+            ) : (
+              <p>Brak informacji o ewolucji.</p>
+            )}
+          </div>
+        </aside>
 
       </div>
 
-
     </main>
-
   );
 
 }

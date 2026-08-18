@@ -42,3 +42,13 @@ export async function getEvolutionChain(urlOrId) {
 
   return response.json();
 }
+
+export async function getAbility(nameOrId) {
+  const response = await fetch(`${BASE_URL}/ability/${nameOrId}`);
+
+  if (!response.ok) {
+    throw new Error("Nie udało się pobrać danych umiejętności.");
+  }
+
+  return response.json();
+}

@@ -13,6 +13,8 @@
     background:#b91c1c;
 
     font-family: 'Alatsi', sans-serif;
+
+    box-sizing: border-box;
 }
 
 .logo {

@@ -45,7 +45,7 @@
 }
 
 .flavor p {
-    white-space: pre-wrap;
+    white-space: normal;
 }
 
 .sound-button-wrap {
@@ -60,11 +60,72 @@
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+    min-width: 69px;
+    min-height: 31px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    user-select: none;
 }
 
 .sound-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.sound-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.18);
+}
+
+.sound-button:hover {
+    transform: none;
+    background: linear-gradient(180deg,#ef4444,#b91c1c);
+}
+
+.sound-button:active {
+    transform: none;
+    background: linear-gradient(180deg,#ef4444,#b91c1c);
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.18);
+    padding: 8px 12px;
+}
+
+.measurements {
+    margin-top: 12px;
+    padding: 10px 10px 10px 25px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.measurements p {
+    margin: 0;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.measurement-icon {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    max-width: 36px;
+    flex-shrink: 0;
+    margin-right: 10px;
+}
+
+.measurements p:nth-child(2) .measurement-icon {
+    width: 52px;
+    height: 52px;
+    max-width: 52px;
 }
 
 .sound-controls {
@@ -93,13 +154,45 @@
     cursor: pointer;
 }
 
-.sound-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(239,68,68,0.18);
+.abilities {
+    margin-top: 16px;
 }
 
-.sound-button:active {
-    transform: none;
+.abilities h2 {
+    margin-bottom: 12px;
+}
+
+.abilities-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ability-item {
+    padding: 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+}
+
+.ability-item h3 {
+    margin: 0 0 6px 0;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pokemon-details .hidden-ability-icon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.ability-item p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #d1d5db;
 }
 
 .evolution {

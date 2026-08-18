@@ -3,7 +3,10 @@ import { getTypeColor } from "../../utils/getTypeColor";
 import { useParams, Link } from "react-router-dom";
 
 import fallbackImage from "../../assets/images/Question_mark_pokeball.png";
-import { getPokemon, getPokemonSpecies } from "../../services/pokeApi";
+import weightIcon from "../../assets/icons/weight.png";
+import heightIcon from "../../assets/icons/height.png";
+import hiddenAbilityIcon from "../../assets/icons/hidden_ability.png";
+import { getPokemon, getPokemonSpecies, getAbility } from "../../services/pokeApi";
 import Ewolution from "../../components/Ewolution/Ewolution";
 import TypeBadge from "../../components/TypeBadge/TypeBadge";
 
@@ -21,6 +24,7 @@ function PokemonDetails() {
   const [audioAvailable, setAudioAvailable] = useState(false);
   const audioRef = useRef(null);
   const [volume, setVolume] = useState(1);
+  const [abilities, setAbilities] = useState([]);
 
 
   useEffect(() => {
@@ -49,6 +53,36 @@ function PokemonDetails() {
         } catch (e) {
           // błąd niekrytyczny: pozostaw species jako null
           console.warn(e);
+        }
+
+        // pobierz szczegóły umiejętności
+        try {
+          if (data.abilities && data.abilities.length > 0) {
+            const abilitiesData = await Promise.all(
+              data.abilities.map(async (ability) => {
+                try {
+                  const details = await getAbility(ability.ability.name);
+                  const effect = details.effect_entries?.find(
+                    (e) => e.language.name === "en" || e.language.name === "pl"
+                  );
+                  return {
+                    name: ability.ability.name,
+                    isHidden: ability.is_hidden,
+                    effect: effect?.effect || "Brak opisu.",
+                  };
+                } catch (e) {
+                  return {
+                    name: ability.ability.name,
+                    isHidden: ability.is_hidden,
+                    effect: "Brak opisu.",
+                  };
+                }
+              })
+            );
+            setAbilities(abilitiesData);
+          }
+        } catch (e) {
+          console.warn("Błąd pobierania umiejętności:", e);
         }
 
 
@@ -170,6 +204,11 @@ function PokemonDetails() {
               />
             </div>
 
+          <div className="measurements">
+            <p><img src={weightIcon} alt="Waga" title="Waga" className="measurement-icon" /> {(pokemon.weight / 10).toFixed(1)} kg</p>
+            <p><img src={heightIcon} alt="Wzrost" title="Wzrost" className="measurement-icon" /> {(pokemon.height / 10).toFixed(1)} m</p>
+          </div>
+
           <div className="stats">
             <h2>Podstawowe statystyki</h2>
             {pokemon.stats.map((stat) => (
@@ -192,6 +231,25 @@ function PokemonDetails() {
               })()
             ) : (
               <p>Brak opisu.</p>
+            )}
+          </div>
+
+          <div className="abilities">
+            <h2>Umiejętności</h2>
+            {abilities.length > 0 ? (
+              <div className="abilities-list">
+                {abilities.map((ability, idx) => (
+                  <div key={idx} className="ability-item">
+                    <h3>
+                      {ability.name.charAt(0).toUpperCase() + ability.name.slice(1)}
+                      {ability.isHidden && <img src={hiddenAbilityIcon} alt="Ukryta umiejętność" title="Ukryta umiejętność" className="hidden-ability-icon" />}
+                    </h3>
+                    <p>{ability.effect}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>Brak informacji o umiejętnościach.</p>
             )}
           </div>
 

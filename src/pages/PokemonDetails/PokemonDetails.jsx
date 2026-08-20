@@ -135,7 +135,7 @@ function PokemonDetails() {
             }}
           />
 
-          <h3>#{pokemon.id}</h3>
+          <h3>ID Pokémon'a: #{pokemon.id}</h3>
 
           <div className="types">
             {pokemon.types.map((type) => (

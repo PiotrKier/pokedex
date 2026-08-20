@@ -85,7 +85,7 @@ function Navbar() {
 
           type="text"
 
-          placeholder="Search Pokémon or type..."
+          placeholder="Wyszukaj Pokémon'a lub typ..."
 
           value={search}
 
@@ -95,7 +95,7 @@ function Navbar() {
 
 
         <button type="submit">
-          Clear
+          Wyczyść
         </button>
 
 
